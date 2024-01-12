@@ -1,48 +1,52 @@
-﻿Exposure,Category,LOINC code,Test order name,Use
-HDL,Cardiovascular,2085-9,"Cholesterol, High-Density Lipoprotein (HDL), Serum",1
-HDL,Cardiovascular,14646-4,Cholesterol in HDL [Moles/volume] in Serum or Plasma,1
-LDL,Cardiovascular,22748-8,Cholesterol in LDL [Moles/volume] in Serum or Plasma,1
-LDL,Cardiovascular,18261-8,"Low-Density Lipoprotein (LDL) Cholesterol, Beta-Quantification, Serum",0
-LDL,Cardiovascular,2089-1,"LDL Cholesterol, Direct",1
-LDL,Cardiovascular,100732-7,"Lipoprotein (a) and Low-Density Lipoprotein Cholesterol, Serum",0
-LDL,Cardiovascular,90364-1,"Small Dense Low Density Lipoprotein Cholesterol, Serum",0
-Triglycerides,Cardiovascular,12228-3,"Triglycerides, Body Fluid",0
-Triglycerides,Cardiovascular,2571-8,"Triglycerides, Serum",1
-Triglycerides,Cardiovascular,3043-7,Triglyceride [Mass/volume] in Serume or Plasma,1
-Triglycerides,Cardiovascular,2571-8,"Triglycerides, CDC, Serum",1
-Triglycerides,Cardiovascular,14927-8,Triglyceride [Moles/volume] in Serum or plasma,0
-Total cholesterol,Cardiovascular,2093-3,"Cholesterol, Total, Serum",1
-PUFAs,Cardiovascular,LP203043-7,Polyunsaturated fat intake,0
-PUFAs,Cardiovascular,35177-5,Polyunsaturated fatty acids [Moles/volume] in Serum or Plasma,1
-CRP,Cardiovascular,30522-7,"C-Reactive Protein, High Sensitivity, Serum",1
-CRP,Cardiovascular,1988-5,"C-Reactive Protein (CRP), Serum",0
-CRP,Cardiovascular,76486-0,C reactive protein [Moles/volume] in Serum or Plasma by High sensitivity method,0
-CRP,Cardiovascular,11039-5,C reactive protein [Presence] in Serum or Plasma,0
-CRP,Cardiovascular,76485-2,C reactive protein [Moles/volume] in Serum or Plasma,0
-eGFR,Renal biomarker,62238-1,"Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine-based formula",1
-eGFR,Renal biomarker,98979-8,"Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine-based formula",1
-eGFR,Renal biomarker,98980-6,"Glomerular filtration rate /1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine and Cystatin C-based formula",1
-eGFR,Renal biomarker,87430-5,"Cystatin C with Estimated Glomerular Filtration Rate (eGFR), Serum",0
-eGFR,Renal biomarker,45066-8,"Creatinine with Estimated Glomerular Filtration Rate (eGFR), Serum",0
-Creatinine,Renal biomarker,45066-8,"Creatinine with Estimated Glomerular Filtration Rate (eGFR), Serum",0
-Creatinine,Renal biomarker,65634-8,"Creatinine, 24 Hour, Urine",0
-Creatinine,Renal biomarker,12190-5,"Creatinine, Body Fluid",0
-Creatinine,Renal biomarker,58446-6,"Creatinine Clearance, Serum and 24-Hour Urine",0
-Creatinine,Renal biomarker,2160-0,Creatinine [Mass/volume] in Serum or Plasma,1
-Creatinine,Renal biomarker,2161-8,"Creatinine, Urine",0
-Creatinine,Renal biomarker,2161-8,"Creatinine, Random, Urine",0
-Cystatin C,Renal biomarker,87430-5,"Cystatin C with Estimated Glomerular Filtration Rate (eGFR), Serum",0
-Cystatin C,Renal biomarker,33863-2,Cystatin C [Mass/volume] in Serum or Plasma,1
-Vitamin D,Vitamin levels,62290-2,"1,25-Dihydroxyvitamin D, Serum",1
-Vitamin B12,Vitamin levels,96805-7,"Vitamin B12 and Folate, Serum",0
-Vitamin B12,Vitamin levels,2132-9,"Vitamin B12 Assay, Serum",0
-Vitamin B12,Vitamin levels,16695-9,Cobalamin (Vitamin B12) [Mass/volume] in Blood,1
-Fasting glucose plasma,Blood sugar levels,1558-9,Fasting glucose [Mass/volume] in Serum of Plasma,1
-Fasting glucose plasma,Blood sugar levels,76629-5,Fasting glucose [Moles/volume] in Blood,0
-Glucose,Blood sugar levels,2345-7,Glucose [Mass/volume] in Serum or Plasma,1
-Glucose,Blood sugar levels,2344-0,"Glucose, Body Fluid",0
-Glucose,Blood sugar levels,2342-4,"Glucose, Spinal Fluid",0
-Glucose,Blood sugar levels,53328-1,"Glucose, Random, Urine",0
-Glucose,Blood sugar levels,2345-7,"Glucose, Random, Serum",0
-Estradiol,Women's health,2243-4,"Estradiol, Serum",1
-Estradiol,Women's health,2243-4,"Estradiol, Rapid, Immunoassay, Serum",1
+﻿Exposure,Category,LOINC code,Test order name,Use,ExPRS
+HDL,Cardiovascular,2085-9,"Cholesterol, High-Density Lipoprotein (HDL), Serum",1,1
+HDL,Cardiovascular,14646-4,Cholesterol in HDL [Moles/volume] in Serum or Plasma,1,0
+LDL,Cardiovascular,13457-7,Low-Density Lipoprotein (LDL) Cholesterol,1,1
+LDL,Cardiovascular,22748-8,Cholesterol in LDL [Moles/volume] in Serum or Plasma,1,0
+LDL,Cardiovascular,18261-8,"Low-Density Lipoprotein (LDL) Cholesterol, Beta-Quantification, Serum",0,0
+LDL,Cardiovascular,2089-1,"LDL Cholesterol, Direct",1,0
+LDL,Cardiovascular,100732-7,"Lipoprotein (a) and Low-Density Lipoprotein Cholesterol, Serum",0,0
+LDL,Cardiovascular,90364-1,"Small Dense Low Density Lipoprotein Cholesterol, Serum",0,0
+Triglycerides,Cardiovascular,12228-3,"Triglycerides, Body Fluid",0,0
+Triglycerides,Cardiovascular,2571-8,"Triglycerides, Serum",1,1
+Triglycerides,Cardiovascular,3043-7,Triglyceride [Mass/volume] in Serume or Plasma,1,0
+Triglycerides,Cardiovascular,2571-8,"Triglycerides, CDC, Serum",1,0
+Triglycerides,Cardiovascular,14927-8,Triglyceride [Moles/volume] in Serum or plasma,0,0
+Total cholesterol,Cardiovascular,2093-3,"Cholesterol, Total, Serum",1,0
+Total cholesterol,Cardiovascular,,Calculate as (LDL-C + HDL-C + Triglyceride) / 5,0,0
+PUFAs,Cardiovascular,LP203043-7,Polyunsaturated fat intake,0,0
+PUFAs,Cardiovascular,35177-5,Polyunsaturated fatty acids [Moles/volume] in Serum or Plasma,1,0
+CRP,Cardiovascular,30522-7,"C-Reactive Protein, High Sensitivity, Serum",1,0
+CRP,Cardiovascular,1988-5,"C-Reactive Protein (CRP), Serum",0,1
+CRP,Cardiovascular,76486-0,C reactive protein [Moles/volume] in Serum or Plasma by High sensitivity method,0,0
+CRP,Cardiovascular,11039-5,C reactive protein [Presence] in Serum or Plasma,0,0
+CRP,Cardiovascular,76485-2,C reactive protein [Moles/volume] in Serum or Plasma,0,0
+eGRF,Renal biomarker,48642-3,"Estimated GRF, Non-Black",1,1
+eGFR,Renal biomarker,62238-1,"Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine-based formula",1,0
+eGFR,Renal biomarker,98979-8,"Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine-based formula",1,0
+eGFR,Renal biomarker,98980-6,"Glomerular filtration rate /1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine and Cystatin C-based formula",1,0
+eGFR,Renal biomarker,87430-5,"Cystatin C with Estimated Glomerular Filtration Rate (eGFR), Serum",0,0
+eGFR,Renal biomarker,45066-8,"Creatinine with Estimated Glomerular Filtration Rate (eGFR), Serum",0,0
+Creatinine,Renal biomarker,45066-8,"Creatinine with Estimated Glomerular Filtration Rate (eGFR), Serum",0,0
+Creatinine,Renal biomarker,65634-8,"Creatinine, 24 Hour, Urine",0,0
+Creatinine,Renal biomarker,12190-5,"Creatinine, Body Fluid",0,0
+Creatinine,Renal biomarker,58446-6,"Creatinine Clearance, Serum and 24-Hour Urine",0,0
+Creatinine,Renal biomarker,2160-0,Creatinine [Mass/volume] in Serum or Plasma,1,1
+Creatinine,Renal biomarker,2161-8,"Creatinine, Urine",0,0
+Creatinine,Renal biomarker,2161-8,"Creatinine, Random, Urine",0,0
+Cystatin C,Renal biomarker,87430-5,"Cystatin C with Estimated Glomerular Filtration Rate (eGFR), Serum",0,0
+Cystatin C,Renal biomarker,33863-2,Cystatin C [Mass/volume] in Serum or Plasma,1,1
+Vitamin D,Vitamin levels,1989-3,"25-Hydroxyvitamin D, Total",1,1
+Vitamin D,Vitamin levels,62290-2,"1,25-Dihydroxyvitamin D, Serum",1,0
+Vitamin B12,Vitamin levels,96805-7,"Vitamin B12 and Folate, Serum",0,0
+Vitamin B12,Vitamin levels,2132-9,"Vitamin B12 Assay, Serum",0,1
+Vitamin B12,Vitamin levels,16695-9,Cobalamin (Vitamin B12) [Mass/volume] in Blood,1,0
+Fasting glucose plasma,Blood sugar levels,1558-9,Fasting glucose [Mass/volume] in Serum of Plasma,1,0
+Fasting glucose plasma,Blood sugar levels,76629-5,Fasting glucose [Moles/volume] in Blood,0,0
+Glucose,Blood sugar levels,2345-7,Glucose [Mass/volume] in Serum or Plasma,1,1
+Glucose,Blood sugar levels,2344-0,"Glucose, Body Fluid",0,0
+Glucose,Blood sugar levels,2342-4,"Glucose, Spinal Fluid",0,0
+Glucose,Blood sugar levels,53328-1,"Glucose, Random, Urine",0,0
+Glucose,Blood sugar levels,2345-7,"Glucose, Random, Serum",0,0
+Estradiol,Women's health,2243-4,"Estradiol, Serum",1,1
+Estradiol,Women's health,2243-4,"Estradiol, Rapid, Immunoassay, Serum",1,1
