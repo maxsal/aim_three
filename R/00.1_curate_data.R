@@ -52,9 +52,14 @@ demo[, female := fcase(
     sex == "Male", 0
 )]
 
-keep_these_demo_vars <- c("id", "age", "age_enroll", "sex", "race_eth", "married")
+keep_these_demo_vars <- c("id", "age", "age_enroll", "sex", "race_eth", "married", "female")
 
-demo <- demo[, ..keep_these_demo_vars]
+demo <- unique(demo[, ..keep_these_demo_vars])
+qsave(
+    x        = demo,
+    file     = glue("data/private/mgi_demo_{version}.qs"),
+    nthreads = 4
+)
 
 # SOCIAL HISTORY ---------------------------------------------------------------
 social <- fread(paste0(path, "SocialHx_", as.Date(version, "%Y%m%d"), ".txt")) |>
@@ -86,6 +91,22 @@ alcohol <- social[, .(id, alcohol_use_status)] |>
         alcohol_ans_obs   = sum(!is.na(alcohol_use_status)),
         .by = id
     ) |> as.data.table()
+
+qsave(
+    x        = smoking,
+    file     = glue("data/private/mgi_smoking_{version}.qs"),
+    nthreads = 4
+)
+qsave(
+    x        = alcohol,
+    file     = glue("data/private/mgi_alcohol_{version}.qs"),
+    nthreads = 4
+)
+qsave(
+    x        = social,
+    file     = glue("data/private/mgi_social_{version}.qs"),
+    nthreads = 4
+)
 
 rm(social)
 
@@ -125,17 +146,36 @@ ht_wt <- anthro[, .(
     bmi_n = sum(!is.na(bmi))
 ), id]
 
+qsave(
+    x        = anthro,
+    file     = glue("data/private/mgi_anthro_{version}.qs"),
+    nthreads = 4
+)
+qsave(
+    x        = ht_wt,
+    file     = glue("data/private/mgi_ht_wt_{version}.qs"),
+    nthreads = 4
+)
+
 rm(anthro)
+
+
+#
+ht_wt_keep <- c("id", grep("_exprs_med", names(ht_wt), value = TRUE))
+ht_wt <- ht_wt[, ..ht_wt_keep]
+names(ht_wt) <- gsub("_exprs", "", names(ht_wt))
 
 demo_combined <- reduce(
     list(demo, smoking, alcohol, ht_wt),
     full_join,
     by = "id"
 )
+keep_demo_combined <- names(demo_combined)[!grepl("_obs", names(demo_combined))]
+demo_combined <- demo_combined[, ..keep_demo_combined]
 
 qsave(
     x        = demo_combined,
-    file     = glue("data/private/mgi_demo_{version}.qs"),
+    file     = glue("data/private/mgi_demo_comb_{version}.qs"),
     nthreads = 4
 )
 
@@ -150,48 +190,48 @@ loinc_codes <- loinc_code_file |>
     dplyr::filter(ex_prs == 1)
 loinc_codes_only <- loinc_codes[, unique(loinc_code)]
 
-# prepare for reading in chunks
-lines_per_chunk <- 1e6 # 1 million lines per chunk
-total_lines     <- get_line_count(labs_results_file) # ~72 million lines
-chunks          <- ceiling(total_lines / lines_per_chunk) # ~72 chunks
+# # prepare for reading in chunks
+# lines_per_chunk <- 1e6 # 1 million lines per chunk
+# total_lines     <- get_line_count(labs_results_file) # ~72 million lines
+# chunks          <- ceiling(total_lines / lines_per_chunk) # ~72 chunks
 
-var_names <- read_delim(labs_results_file, n_max = 1, show_col_types = FALSE) |>
-    clean_names() |>
-    names()
+# var_names <- read_delim(labs_results_file, n_max = 1, show_col_types = FALSE) |>
+#     clean_names() |>
+#     names()
 
-# read in lab results file in chunks of 1 million lines
-lab_res <- map(
-    1:chunks,
-    \(chunk) {
-            read_delim(labs_results_file,
-                skip = 1 + (chunk - 1) * lines_per_chunk, n_max = lines_per_chunk,
-                col_names = var_names, col_types = cols(.default = "c"),
-                progress = FALSE
-            ) |>
-            dplyr::filter(loinc %in% loinc_codes_only)
-    },
-    .progress = TRUE
-)
+# # read in lab results file in chunks of 1 million lines
+# lab_res <- map(
+#     1:chunks,
+#     \(chunk) {
+#             read_delim(labs_results_file,
+#                 skip = 1 + (chunk - 1) * lines_per_chunk, n_max = lines_per_chunk,
+#                 col_names = var_names, col_types = cols(.default = "c"),
+#                 progress = FALSE
+#             ) |>
+#             dplyr::filter(loinc %in% loinc_codes_only)
+#     },
+#     .progress = TRUE
+# )
 
-# combine chunks into one data.table
-labs <- bind_rows(lab_res) |>
-    select(
-        id = de_id_patient_id,
-        collection_dsb = collection_date_days_since_birth,
-        order_code, order_name,
-        result_code, result_name,
-        loinc, value, unit,
-        range, specimen_source, hilonormal_flag
-    ) |>
-    as.data.table()
+# # combine chunks into one data.table
+# labs <- bind_rows(lab_res) |>
+#     select(
+#         id = de_id_patient_id,
+#         collection_dsb = collection_date_days_since_birth,
+#         order_code, order_name,
+#         result_code, result_name,
+#         loinc, value, unit,
+#         range, specimen_source, hilonormal_flag
+#     ) |>
+#     as.data.table()
 
-qsave(
-    x         = labs,
-    file      = glue("data/private/mgi_labs_raw_{version}.qs"),
-    nthreads  = 4
-)
+# qsave(
+#     x         = labs,
+#     file      = glue("data/private/mgi_labs_raw_{version}.qs"),
+#     nthreads  = 4
+# )
 
-# labs <- qread(glue("data/private/mgi_labs_raw_{version}.qs"))
+labs <- qread(glue("data/private/mgi_labs_raw_{version}.qs"))
 
 labs <- left_join(
     labs,
@@ -236,6 +276,19 @@ qsave(
 fwrite(
     x = rbindlist(map(labs_cleaned, 2)),
     file = glue("data/private/mgi_labs_cleaning_summary_{version}.csv")
+)
+
+##
+demo_labs <- full_join(
+    demo_combined,
+    cleaned_labs_med,
+    by = "id"
+)
+
+qsave(
+    x        = demo_labs,
+    file     = glue("data/private/mgi_demo_comb_labs_{version}.qs"),
+    nthreads = 4
 )
 
 cli::cli_alert_success("Done! 🎉")
