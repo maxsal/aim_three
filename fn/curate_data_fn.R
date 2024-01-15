@@ -21,6 +21,17 @@ sd4_clean <- function(x) {
     x
 }
 
+# helper function to read number of rows in a file
+get_line_count <- function(file) {
+    f <- file(file, open = "rb")
+    nlines <- 0L
+    while (length(chunk <- readBin(f, "raw", 65536)) > 0) {
+        nlines <- nlines + sum(chunk == as.raw(10L))
+    }
+    nlines
+}
+
+
 ## Cleaning the lab data based on LOINC code -----------------------------------
 clean_labs <- function(lab_data, loinc_code, name) {
     data_for_cleaning <- lab_data[loinc == loinc_code, ]
