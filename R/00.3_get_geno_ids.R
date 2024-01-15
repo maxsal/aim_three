@@ -3,7 +3,7 @@
 # 2024-01-15
 
 # LIBRARIES --------------------------------------------------------------------
-ms::libri(ms, data.table, tidyverse, mice, cli, glue, janitor, qs, optparse)
+ms::libri(ms, data.table, glue, qs, optparse)
 
 option_list <- list(
     make_option(c("-v", "--version"),
