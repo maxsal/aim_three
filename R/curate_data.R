@@ -1,8 +1,21 @@
-ms::libri(ms, data.table, tidyverse, mice, cli, glue, janitor, qs)
+# Script for curating demographic, social hx, anthropometric, and lab data
+# max salvatore
+# 2024-01-15
+ms::libri(ms, data.table, tidyverse, mice, cli, glue, janitor, qs, optparse)
 
-version <- "20230322"
+option_list <- list(
+    make_option(c("-v", "--version"),
+        type = "character", default = "20230322",
+        help = "MGI MAGIC data pull version [default = %default]"
+    )
+)
+parser <- OptionParser(usage = "%prog [options]", option_list = option_list)
+args <- parse_args(parser, positional_arguments = 0)
+opt <- args$options
+print(opt)
+
+version <- opt$version
 path <- paste0("/net/junglebook/magic_data/Data_Pulls_from_Data_Office/", version, "/")
-# Freeze 3
 
 # data
 ## demographics
@@ -136,13 +149,12 @@ ht_wt <- tmp[, .(
 #     nlines
 # }
 
-# # read in LOINC codes to filter
-# loinc_code_file <- read_delim("data/public/loinc_codes.csv", show_col_types = FALSE) |>
-#     clean_names()
-# loinc_codes <- loinc_code_file |>
-#     dplyr::filter(ex_prs == 1) |>
-#     dplyr::pull(loinc_code) |>
-#     unique()
+# read in LOINC codes to filter
+loinc_code_file <- read_delim("data/public/loinc_codes.csv", show_col_types = FALSE) |>
+    clean_names() |> as.data.table()
+loinc_codes <- loinc_code_file |>
+    dplyr::filter(ex_prs == 1)
+loinc_codes_only <- loinc_codes[, unique(loinc_code)]
 
 # # prepare for reading in chunks
 # lines_per_chunk <- 1e6 # 1 million lines per chunk
@@ -162,7 +174,7 @@ ht_wt <- tmp[, .(
 #                 col_names = var_names, col_types = cols(.default = "c"),
 #                 progress = FALSE
 #             ) |>
-#             dplyr::filter(loinc %in% loinc_codes)
+#             dplyr::filter(loinc %in% loinc_codes_only)
 #     },
 #     .progress = TRUE
 # )
@@ -188,6 +200,8 @@ ht_wt <- tmp[, .(
 #     nthreads  = 4
 # )
 
+labs <- qread(glue("data/private/mgi_labs_raw_{version}.qs"))
+
 labs <- left_join(
     labs,
     loinc_code_file |>
@@ -196,60 +210,126 @@ labs <- left_join(
     by = "loinc"
 )
 
+clean_labs <- function(lab_data, loinc_code, name) {
+    data_for_cleaning <- lab_data[loinc == loinc_code, ]
 
-hdl <- labs[loinc == "2085-9", ]
-n_total_obs <- hdl[, .N]
-n_total_ppl <- hdl[, .N, id][, .N]
-n_miss_num_conv_obs <- sum(is.na(as.numeric(hdl$value)))
+    # starting counts
+    suppressWarnings({
+    n_total_obs <- data_for_cleaning[, .N]
+    n_total_ppl <- data_for_cleaning[, .N, id][, .N]
+    n_miss_num_conv_obs <- sum(is.na(as.numeric(data_for_cleaning$value)))
 
-hdl[, value := as.numeric(value)]
-n_clean_obs <- hdl[!is.na(value), .N]
-n_clean_ppl <- hdl[!is.na(value), .N, id][, .N]
-n_miss_num_conv_ppl <- n_total_ppl - n_clean_ppl
+    data_for_cleaning[, value := as.numeric(value)]
+    n_clean_obs <- data_for_cleaning[!is.na(value), .N]
+    n_clean_ppl <- data_for_cleaning[!is.na(value), .N, id][, .N]
+    n_miss_num_conv_ppl <- n_total_ppl - n_clean_ppl
 
-pre_cutoff_sum <- hdl[, .(
-    min_cutoff = quantile(value, 0.25, na.rm = TRUE) - 1.5 * IQR(value, na.rm = TRUE),
-    first_quartile = quantile(value, 0.25, na.rm = TRUE),
-    median = median(value, na.rm = TRUE),
-    mean = mean(value, na.rm = TRUE),
-    third_quartile = quantile(value, 0.75, na.rm = TRUE),
-    max_cutoff = quantile(value, 0.75, na.rm = TRUE) + 1.5 * IQR(value, na.rm = TRUE)
-)]
+    # distribution
+    pre_cutoff_sum <- data_for_cleaning[, .(
+        pre_min_cutoff = quantile(value, 0.25, na.rm = TRUE) - 1.5 * IQR(value, na.rm = TRUE),
+        pre_first_quartile = quantile(value, 0.25, na.rm = TRUE),
+        pre_median = median(value, na.rm = TRUE),
+        pre_mean = mean(value, na.rm = TRUE),
+        pre_third_quartile = quantile(value, 0.75, na.rm = TRUE),
+        pre_max_cutoff = quantile(value, 0.75, na.rm = TRUE) + 1.5 * IQR(value, na.rm = TRUE)
+    )]
 
+    # counts after cutoff
+    n_miss_extreme_obs <- sum(is.na(exprs_clean(data_for_cleaning$value)))
+    data_for_cleaning[, value := exprs_clean(value)]
+    n_final_obs <- data_for_cleaning[!is.na(value), .N]
+    n_final_ppl <- data_for_cleaning[!is.na(value), .N, id][, .N]
+    n_miss_extreme_ppl <- n_clean_ppl - n_final_ppl
+    })
+    # summary stats
+    final_sum <- data_for_cleaning[, .(
+        final_min = min(value, na.rm = TRUE),
+        final_first_quartile = quantile(value, 0.25, na.rm = TRUE),
+        final_median = median(value, na.rm = TRUE),
+        final_mean = mean(value, na.rm = TRUE),
+        final_third_quartile = quantile(value, 0.75, na.rm = TRUE),
+        final_max = max(value, na.rm = TRUE)
+    )]
 
-n_miss_extreme_obs <- sum(is.na(exprs_clean(hdl$value)))
-hdl[, value := exprs_clean(value)]
-n_final_obs <- hdl[!is.na(value), .N]
-n_final_ppl <- hdl[!is.na(value), .N, id][, .N]
-n_miss_extreme_ppl <- n_clean_ppl - n_final_ppl
+    # median and mean
+    med_name <- paste0(name, "_med")
+    mn_name <- paste0(name, "_mn")
+    n_name <- paste0(name, "_n")
+    data_for_cleaning_cleaned <- data_for_cleaning[!is.na(value), .(
+        data_for_cleaning_med = median(value, na.rm = TRUE),
+        data_for_cleaning_mn = mean(value, na.rm = TRUE),
+        data_for_cleaning_obs = .N
+    ), by = id] |>
+        dplyr::rename(
+            {{med_name}} := data_for_cleaning_med,
+            {{mn_name}} := data_for_cleaning_mn,
+            {{n_name}} := data_for_cleaning_obs
+        )
 
-final_sum <- hdl[, .(
-    min = min(value, na.rm = TRUE),
-    first_quartile = quantile(value, 0.25, na.rm = TRUE),
-    median = median(value, na.rm = TRUE),
-    mean = mean(value, na.rm = TRUE),
-    third_quartile = quantile(value, 0.75, na.rm = TRUE),
-    max = max(value, na.rm = TRUE)
-)]
+    cleaning_summary <- cbind(
+        data.table(
+            loinc_code = loinc_code,
+            loinc_name = name,
+            n_total_obs = n_total_obs,
+            n_total_ppl = n_total_ppl,
+            n_miss_num_conv_obs = n_miss_num_conv_obs,
+            n_clean_obs = n_clean_obs,
+            n_clean_ppl = n_clean_ppl,
+            n_miss_num_conv_ppl = n_miss_num_conv_ppl
+        ),
+        pre_cutoff_sum,
+        data.table(
+            n_miss_extreme_obs = n_miss_extreme_obs,
+            n_final_obs = n_final_obs,
+            n_final_ppl = n_final_ppl,
+            n_miss_extreme_ppl = n_miss_extreme_ppl,
+            n_loss = n_total_ppl - n_final_ppl
+        ),
+        final_sum
+    )
 
-hdl_cleaned <- hdl[!is.na(value), .(
-    hdl_med = median(value, na.rm = TRUE),
-    hdl_mn = mean(value, na.rm = TRUE),
-    hdl_obs = .N
-), by = id]
+    return(
+        list(
+            data = data_for_cleaning_cleaned,
+            cleaning_summary = cleaning_summary
+        )
+    )
+}
 
-hdl 
+clean_these_labs        <- loinc_codes[, loinc_code]
+names(clean_these_labs) <- janitor::make_clean_names(loinc_codes[, exposure])
 
-length(unique(hdl$id))
-summary(hdl[, .N, id][, N])
-summary(hdl[, value])
+labs_cleaned <- map(
+    seq_along(clean_these_labs),
+    \(i) {
+        clean_labs(
+            lab_data   = labs,
+            loinc_code = clean_these_labs[i],
+            name       = names(clean_these_labs)[i]
+        )
+    },
+    .progress = TRUE
+) |>
+    set_names(names(clean_these_labs))
 
+cleaned_labs <- reduce(map(labs_cleaned, 1), full_join, by = "id")
+qsave(
+    x        = cleaned_labs,
+    file     = glue("data/private/mgi_labs_cleaned_{version}.qs"),
+    nthreads = 4
+)
 
+medians_only <- c("id", grep("_med", names(cleaned_labs), value = TRUE))
+cleaned_labs_med <- cleaned_labs[, ..medians_only]
+qsave(
+    x        = cleaned_labs,
+    file     = glue("data/private/mgi_labs_cleaned_medians_{version}.qs"),
+    nthreads = 4
+)
 
-labs |>
-    group_by(loinc) |>
-    (\(x) x[is.na(as.numeric(value)), ])() |>
-    (\(x) x[, unique(value)])()
+# summaries
+fwrite(
+    x = rbindlist(map(labs_cleaned, 2)),
+    file = glue("data/private/mgi_labs_cleaning_summary_{version}.csv")
+)
 
-
-sapply(labs, \(x) length(unique(x)))
