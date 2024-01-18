@@ -22,6 +22,7 @@ path <- paste0("/net/junglebook/magic_data/Data_Pulls_from_Data_Office/", versio
 source("fn/curate_data_fn.R")
 
 # DEMOGRAPHICS DATA ------------------------------------------------------------
+cli_progress_step("Demographics")
 demo <- fread(paste0(path, "Demographics_", as.Date(version, "%Y%m%d"), ".txt")) |>
     clean_names()
 setnames(
@@ -62,6 +63,7 @@ qsave(
 )
 
 # SOCIAL HISTORY ---------------------------------------------------------------
+cli_progress_step("Smoking and alcohol")
 social <- fread(paste0(path, "SocialHx_", as.Date(version, "%Y%m%d"), ".txt")) |>
     clean_names()
 setnames(
@@ -111,6 +113,7 @@ qsave(
 rm(social)
 
 # ANTHROPOMETRICS --------------------------------------------------------------
+cli_progress_step("Anthropometrics")
 anthro <- fread(paste0(path, "Anthropometrics_2023-03-22.txt")) |>
     clean_names()
 setnames(
@@ -146,6 +149,13 @@ ht_wt <- anthro[, .(
     bmi_n = sum(!is.na(bmi))
 ), id]
 
+### thinness
+ht_wt[, thinness_exprs_med := fifelse(
+    bmi_exprs_med <= 19, 1, 0
+)]
+
+###
+
 qsave(
     x        = anthro,
     file     = glue("data/private/mgi_anthro_{version}.qs"),
@@ -159,14 +169,52 @@ qsave(
 
 rm(anthro)
 
+# VITALS -----------------------------------------------------------------------
+cli_progress_step("Vitals")
+vitals <- fread(paste0(path, "EncounterVitals_", as.Date(version, "%Y%m%d"), ".txt"),
+    fill = TRUE, colClasses = "character"
+) |>
+    clean_names()
+setnames(vitals, c("days_since_birth", "de_id_patient_id"), c("dsb", "id"))
+vitals[, value := stringi::stri_trans_general(value, "latin-ascii")]
 
+sbp <- vitals[term_subset == "BP Systolic", ][, value := as.numeric(value)][!is.na(value), ]
+dbp <- vitals[term_subset == "BP Diastolic", ][, value := as.numeric(value)][!is.na(value), ]
+
+sbp <- sbp[, value := exprs_clean(value)][!is.na(value), ]
+dbp <- dbp[, value := exprs_clean(value)][!is.na(value), ]
+
+sbp <- sbp[!is.na(value), .(
+    sbp_med = median(value, na.rm = TRUE),
+    sbp_mn = mean(value, na.rm = TRUE),
+    sbp_obs = .N
+), by = id]
+
+dbp <- dbp[!is.na(value), .(
+    dbp_med = median(value, na.rm = TRUE),
+    dbp_mn = mean(value, na.rm = TRUE),
+    dbp_obs = .N
+), by = id]
+
+bp <- merge.data.table(sbp, dbp, by = "id", all = TRUE)[, in_vitals := 1]
+
+qsave(
+    x        = bp,
+    file     = glue("data/private/mgi_vitals_{version}.qs"),
+    nthreads = 4
+)
+
+## combine
 #
 ht_wt_keep <- c("id", grep("_exprs_med", names(ht_wt), value = TRUE))
 ht_wt <- ht_wt[, ..ht_wt_keep]
 names(ht_wt) <- gsub("_exprs", "", names(ht_wt))
 
+bp_keep <- c("id", grep("_med", names(bp), value = TRUE))
+bp <- bp[, ..bp_keep]
+
 demo_combined <- reduce(
-    list(demo, smoking, alcohol, ht_wt),
+    list(demo, smoking, alcohol, ht_wt, bp),
     full_join,
     by = "id"
 )
@@ -179,7 +227,8 @@ qsave(
     nthreads = 4
 )
 
-# LABS ------------------------------------------------------------------------
+# LABS -------------------------------------------------------------------------
+cli_progress_step("Labs")
 # lab results file path
 labs_results_file <- paste0(path, "LabResults_", as.Date(version, "%Y%m%d"), ".txt")
 
@@ -258,6 +307,58 @@ labs_cleaned <- map(
     set_names(names(clean_these_labs))
 
 cleaned_labs <- reduce(map(labs_cleaned, 1), full_join, by = "id")
+
+### total cholesterol
+hdl <- labs[loinc == "2085-9", ][, value := as.numeric(value)]
+ldl <- labs[loinc == "13457-7", ][, value := as.numeric(value)]
+tri <- labs[loinc == "2571-8", ][, value := as.numeric(value)]
+
+hdl[, .N, by = c("id", "collection_dsb")][N > 1, ]
+ldl[, .N, by = c("id", "collection_dsb")][N > 1, ]
+tri[, .N, by = c("id", "collection_dsb")][N > 1, ]
+
+remove_any_duplicate <- function(x, cols) {
+    x[!(duplicated(x[, ..cols]) | duplicated(x[, ..cols], fromLast = TRUE)), ][]
+}
+
+hdl <- remove_any_duplicate(hdl, c("id", "collection_dsb"))
+ldl <- remove_any_duplicate(ldl, c("id", "collection_dsb"))
+tri <- remove_any_duplicate(tri, c("id", "collection_dsb"))
+
+chol <- reduce(
+    list(
+        hdl[, .(id, dsb = collection_dsb, hdl = value)],
+        ldl[, .(id, dsb = collection_dsb, ldl = value)],
+        tri[, .(id, dsb = collection_dsb, tri = value)]
+    ),
+    merge.data.table,
+    by = c("id", "dsb"),
+    all = TRUE
+) |>
+    na.omit()
+
+chol[, `:=`(
+    total_chol = hdl + ldl + (0.2 * tri)
+)]
+
+chol[, `:=`(
+    total_chol = exprs_clean(total_chol)
+)]
+
+total_chol <- chol[!is.na(total_chol), .(
+    total_chol_med = median(total_chol, na.rm = TRUE),
+    total_chol_mn = mean(total_chol, na.rm = TRUE),
+    total_chol_obs = .N
+), by = id]
+
+cleaned_labs <- merge.data.table(
+    cleaned_labs,
+    total_chol,
+    by = "id",
+    all = TRUE
+)
+###
+
 qsave(
     x        = cleaned_labs,
     file     = glue("data/private/mgi_labs_cleaned_{version}.qs"),
@@ -267,7 +368,7 @@ qsave(
 medians_only <- c("id", grep("_med", names(cleaned_labs), value = TRUE))
 cleaned_labs_med <- cleaned_labs[, ..medians_only]
 qsave(
-    x        = cleaned_labs,
+    x        = cleaned_labs_med,
     file     = glue("data/private/mgi_labs_cleaned_medians_{version}.qs"),
     nthreads = 4
 )
