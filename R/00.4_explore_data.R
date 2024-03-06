@@ -83,4 +83,9 @@ missing_summary <- data.table(
     pct_miss = round(miss_count / n * 100, 1)
 )[order(-pct_miss), ]
 
+fwrite(
+    missing_summary,
+    glue("data/private/missing_summary_exprs_traits_{version}.csv")
+)
+
 demog[complete.cases(demog), ]

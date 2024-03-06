@@ -1,0 +1,34 @@
+﻿trait,description,type,use,prs_file
+apnea,Sleep apnea,binary,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_apnoea_G6-SLEEPAPNO_PRSCS_MGI-Freeze3_20211120_PRS.txt
+drinker,Alcohol drinker status: current,binary,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Dinker-Yes_20117-2_LASSOSUM_MGI-Freeze3_20211120_PRS.txt
+insomnia,Sleeplessness/Insomnia,binary,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_insomnia_1200_PRSCS_MGI-Freeze3_20211120_PRS.txt
+smoker,Ever smoked,binary,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Smoker-Yes_20160_PRSCS_MGI-Freeze3_20211120_PRS.txt
+hypertension,Diagnoses - main ICD10: I10 Essential (primary) hypertension,binary,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Hypertension_I10_PT_MGI-Freeze3_20211120_PRS.txt
+t2d,T2D,binary,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_T2D_METAANALYSIS-DIAGRAM_DBSLMM_MGI-Freeze3_20211120_PRS.txt
+thinness,"Body mass index (<=18, thin low BMI; 19~30, control, normal BMI)",binary,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Thinness_STILTS-UKHLS_PT_MGI-Freeze3_20211120_PRS.txt
+alc_amount,Amount of alcohol drunk on a typical drinking day,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Alcohol-Amount_DrinksPerWeek_LASSOSUM_MGI-Freeze3_20211120_PRS.txt
+bmi,Body mass index,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_BMI_21001-irnt_LASSOSUM_MGI-Freeze3_20211120_PRS.txt
+creatinine_raw,Creatinine (umol/L),Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_eGFR-Creatine_30700-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
+creatinine_qntl,Creatinine (quantile),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_eGFR-Creatine_30700-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
+crp_raw,C-reactive protein,Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_C-reactive-protein_30710-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
+crp_qntl,C-reactive protein (quantile),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_C-reactive-protein_30710-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
+Cystatin C,eGFRcys,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_CysC_eGFRcys-overall-EA_DBSLMM_MGI-Freeze3_20211120_PRS.txt
+dbp_raw,"Diastolic blood pressure, automated reading",Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Diastolic-blood-Pressure_4079-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
+dbp_qntl,"Diastolic blood pressure, automated reading (quantile)",Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Diastolic-blood-Pressure_4079-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
+egfr,eGFR,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_eGFR_20171017-MW-eGFR-EA_PRSCS_MGI-Freeze3_20211120_PRS.txt
+estradiol_raw,Oestradiol (pmol/L),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Estradiol-Oestradiol_30800-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
+estradiol_qntl,Oestradiol (quantile),Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Estradiol-Oestradiol_30800-irnt_DBSLMM_MGI-Freeze3_20211120_PRS.txt
+fpg,Fast Plasma glucose,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_FPG_FGovertime-corrected_PT_MGI-Freeze3_20211120_PRS.txt
+glucose,Glucose (quantile),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Glucose_30740-irnt_DBSLMM_MGI-Freeze3_20211120_PRS.txt
+hdl,HDL cholesterol (quantile),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_HDL_30760-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
+height,Height,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Height_ieu-a-89_PT_MGI-Freeze3_20211120_PRS.txt
+ldl,LDL direct (mmol/L),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_LDL_30780-raw_DBSLMM_MGI-Freeze3_20211120_PRS.txt
+sbp_raw,"Systolic blood pressure, automated reading",Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Systolic-blood-pressure_4080-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
+sbp_qntl,"Systolic blood pressure, automated reading (quantile)",Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Systolic-blood-pressure_4080-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
+chol_raw,Cholesterol,Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_TotalCholesterol_30690-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
+chol_qntl,Cholesterol (quantile),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_TotalCholesterol_30690-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
+tri_raw,Triglycerides (mmol/L),Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Triglycerides_30870-raw_DBSLMM_MGI-Freeze3_20211120_PRS.txt
+tri_qntl,Triglycerides (quantile),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Triglycerides_30870-irnt_DBSLMM_MGI-Freeze3_20211120_PRS.txt
+vit_b12,Vitamin_B12,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Vitamin-B12_Wood-et-al-2013-1000G_PT_MGI-Freeze3_20211120_PRS.txt
+vit_d_raw,Vitamin D,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Vitamin-D_30890-raw_PLINK_MGI-Freeze3_20211120_PRS.txt
+vit_d_qntl,Vitamin D,Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Vitamin-D_30890-irnt_LASSOSUM_MGI-Freeze3_20211120_PRS.txt
