@@ -12,7 +12,7 @@ creatinine_raw,Creatinine (umol/L),Quantitative,0,/net/junglebook/home/larsf/stu
 creatinine_qntl,Creatinine (quantile),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_eGFR-Creatine_30700-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
 crp_raw,C-reactive protein,Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_C-reactive-protein_30710-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
 crp_qntl,C-reactive protein (quantile),Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_C-reactive-protein_30710-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
-Cystatin C,eGFRcys,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_CysC_eGFRcys-overall-EA_DBSLMM_MGI-Freeze3_20211120_PRS.txt
+cys_c,eGFRcys,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_CysC_eGFRcys-overall-EA_DBSLMM_MGI-Freeze3_20211120_PRS.txt
 dbp_raw,"Diastolic blood pressure, automated reading",Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Diastolic-blood-Pressure_4079-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
 dbp_qntl,"Diastolic blood pressure, automated reading (quantile)",Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Diastolic-blood-Pressure_4079-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
 egfr,eGFR,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_eGFR_20171017-MW-eGFR-EA_PRSCS_MGI-Freeze3_20211120_PRS.txt
