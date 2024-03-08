@@ -1,16 +1,47 @@
-﻿label,demo_var
-Alcohol Amt.,alcohol_ever
-SBP,sbp_med
-DBP,dbp_med
-Height,height_cm_med
-BMI,bmi_med
-Glucose,glucose_med
-Vitamin B12,vitamin_b12_med
-Vitamin D,vitamin_d_med
-Creatinine,creatinine_med
-eGFR,e_grf_med
-CRP,crp_med
-TC,total_chol_med
-TG,triglycerides_med
-LDL,ldl_med
-HDL,hdl_med
+﻿label,demo_var,quant
+Alcohol Amt.,alcohol_ever,1
+SBP,sbp_med,1
+DBP,dbp_med,1
+Height,height_cm_med,1
+BMI,bmi_med,1
+Glucose,glucose_med,1
+Vitamin B12,vitamin_b12_med,1
+Vitamin D (lab),vitamin_d_med,1
+Creatinine,creatinine_med,1
+eGFR,e_grf_med,1
+CRP,crp_med,1
+TC,total_chol_med,1
+TG,triglycerides_med,1
+LDL,ldl_med,1
+HDL,hdl_med,1
+Cystatin-C,cystatin_c_med,0
+Estradiol,estradiol_med,0
+Smoke (ever),smoke_ever,0
+Married,married,0
+Race/Ethnicity,race_eth,0
+Thinness,thinness_med,0
+Weight,weight_kg_med,0
+Vitamin D deficiency (phecode),vitamin_dx,0
+Triglycerides (phecode),triglyceridesx,0
+Sex,sex,0
+Mixed hypertension,mixed_hypertensionx,0
+Length of follow-up,length_followupx,0
+Last DSB,last_dsbx,0
+ID,id,0
+Hypertension,hypertensionx,0
+First DSB,first_dsbx,0
+Female,female,0
+Elixhauser score (VW-weighted),elixhauser_vw_weighted,0
+Elixhauser score (unweighted),elixhauser_unweighted,0
+Diabetes (phecode),diabetesx,0
+Depression (phecode),depressionx,0
+Charlson Index (unweighted),charlson_unweighted,0
+Charlson Index (Quan-weighted),charlson_quan_weighted,0
+Cancer (phecode),cancerx,0
+CAD (phecode),cads,0
+Bipolar (phecode),bipolarx,0
+Anxiety (phecode),anxietyx,0
+Age (enrollment),age_enroll,0
+Age (last diagnosis),age_at_last_diagnosisx,0
+Age (first diagnosis),age_at_first_diagnosisx,0
+Age,age,0
