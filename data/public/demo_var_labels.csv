@@ -38,7 +38,7 @@ Depression (phecode),depressionx,0
 Charlson Index (unweighted),charlson_unweighted,0
 Charlson Index (Quan-weighted),charlson_quan_weighted,0
 Cancer (phecode),cancerx,0
-CAD (phecode),cads,0
+CAD (phecode),cadx,0
 Bipolar (phecode),bipolarx,0
 Anxiety (phecode),anxietyx,0
 Age (enrollment),age_enroll,0
