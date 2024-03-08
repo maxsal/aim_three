@@ -10,4 +10,4 @@ Esophageal cancer,150,Cancer of esophagus,CA_101.1,Malignant neoplasm of the eso
 Cervical cancer,180.1,Cervical cancer,CA_106.13,Malignant neoplasm of the cervix,
 Ovarian cancer,184.11,Malignant neoplasm of ovary,CA_106.3,Malignant neoplasm of the ovary,PRSWEB_PHECODE184.11_Phelan-SIOC_PRS-CS_MGI_20200608_PRS.txt
 Melanoma,172.1,"Melanomas of skin, dx or hx",CA_103.1,Melanomas of the skin,PRSWEB_PHECODE172.1_UKBB-SAIGE-HRC-X172.1_PT_MGI_20200608_PRS.txt
-Thyroid,193,Thyroid cancer,CA_110.1,Malignant neoplasm of the thyroid,PRSWEB_PHECODE193_GWAS-Catalog-r2019-05-03-X193_PT_MGI_20200608_PRS.txt
+Thyroid cancer,193,Thyroid cancer,CA_110.1,Malignant neoplasm of the thyroid,PRSWEB_PHECODE193_GWAS-Catalog-r2019-05-03-X193_PT_MGI_20200608_PRS.txt
