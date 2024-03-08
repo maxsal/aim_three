@@ -41,6 +41,7 @@ Cancer (phecode),cancerx,0
 CAD (phecode),cadx,0
 Bipolar (phecode),bipolarx,0
 Anxiety (phecode),anxietyx,0
+Age (categorical),age_catx,0
 Age (enrollment),age_enroll,0
 Age (last diagnosis),age_at_last_diagnosisx,0
 Age (first diagnosis),age_at_first_diagnosisx,0
