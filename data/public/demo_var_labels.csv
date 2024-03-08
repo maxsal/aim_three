@@ -1,5 +1,5 @@
 ﻿label,demo_var,quant
-Alcohol Amt.,alcohol_ever,1
+Alcohol (ever),alcohol_ever,1
 SBP,sbp_med,1
 DBP,dbp_med,1
 Height,height_cm_med,1
