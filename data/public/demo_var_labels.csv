@@ -1,0 +1,16 @@
+﻿label,demo_var
+Alcohol Amt.,alcohol_ever
+SBP,sbp_med
+DBP,dbp_med
+Height,height_cm_med
+BMI,bmi_med
+Glucose,glucose_med
+Vitamin B12,vitamin_b12_med
+Vitamin D,vitamin_d_med
+Creatinine,creatinine_med
+eGFR,e_grf_med
+CRP,crp_med
+TC,total_chol_med
+TG,triglycerides_med
+LDL,ldl_med
+HDL,hdl_med
