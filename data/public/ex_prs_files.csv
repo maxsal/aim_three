@@ -21,7 +21,7 @@ estradiol_qntl,Oestradiol (quantile),Estradiol,Quantitative,0,/net/junglebook/ho
 fpg,Fast Plasma glucose,FPG,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_FPG_FGovertime-corrected_PT_MGI-Freeze3_20211120_PRS.txt
 glucose,Glucose (quantile),Glucose,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Glucose_30740-irnt_DBSLMM_MGI-Freeze3_20211120_PRS.txt
 hdl,HDL cholesterol (quantile),HDL,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_HDL_30760-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt
-height,Height,Heigh,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Height_ieu-a-89_PT_MGI-Freeze3_20211120_PRS.txt
+height,Height,Height,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Height_ieu-a-89_PT_MGI-Freeze3_20211120_PRS.txt
 ldl,LDL direct (mmol/L),LDL,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_LDL_30780-raw_DBSLMM_MGI-Freeze3_20211120_PRS.txt
 sbp_raw,"Systolic blood pressure, automated reading",SBP,Quantitative,1,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Systolic-blood-pressure_4080-raw_PRSCS_MGI-Freeze3_20211120_PRS.txt
 sbp_qntl,"Systolic blood pressure, automated reading (quantile)",SBP,Quantitative,0,/net/junglebook/home/larsf/students/shareMax/ExPRS/ExPRSweb_Systolic-blood-pressure_4080-irnt_PRSCS_MGI-Freeze3_20211120_PRS.txt

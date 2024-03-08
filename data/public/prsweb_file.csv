@@ -1,0 +1,13 @@
+﻿cancer,phecode1.2,phecode1.2_description,phecodex,phecodex_description,prsweb_file
+Breast cancer,174.1,Breast cancer [female],CA_105.1,"Malignant neoplasm of the breast, female",PRSWEB_PHECODE174.1_Onco-iCOGS-Overall-BRCA_PRS-CS_MGI_20200608_PRS.txt
+Prostate cancer,185,Cancer of prostate,CA_107.2,Malignant neoplasm of the prostate,PRSWEB_PHECODE185_Pca-PRACTICAL_PRS-CS_MGI_20200608_PRS.txt
+Lung cancer,165.1,Cancer of bronchus; lung,CA_102.1,Malignant neoplasm of the bronchus and lung,PRSWEB_PHECODE165.1_LUNG-CANCER_PRS-CS_MGI_20200608_PRS.txt
+Colorectal cancer,153,Colorectal cancer,CA_101.41,Colorectal cancer,PRSWEB_PHECODE153_CRC-Huyghe_PT_MGI_20200608_PRS.txt
+Bladder cancer,189.2,Cancer of bladder,CA_108.5,Malignant neoplasm of the bladder,PRSWEB_PHECODE189.2_GWAS-Catalog-r2019-05-03-X189.2_PT_MGI_20200608_PRS.txt
+Pancreatic cancer,157,Pancreatic cancer,CA_101.8,Malignant neoplasm of the pancreas,PRSWEB_PHECODE157_GWAS-Catalog-r2019-05-03-X157_P_5e-08_MGI_20200608_PRS.txt
+Liver cancer,155,Cancer of liver and intrahepatic bile duct,CA_101.6,Malignant neoplasm of the liver and intrahepatic bile ducts,
+Esophageal cancer,150,Cancer of esophagus,CA_101.1,Malignant neoplasm of the esophagus,PRSWEB_PHECODE150_C15_PRS-CS_MGI_20200608_PRS.txt
+Cervical cancer,180.1,Cervical cancer,CA_106.13,Malignant neoplasm of the cervix,
+Ovarian cancer,184.11,Malignant neoplasm of ovary,CA_106.3,Malignant neoplasm of the ovary,PRSWEB_PHECODE184.11_Phelan-SIOC_PRS-CS_MGI_20200608_PRS.txt
+Melanoma,172.1,"Melanomas of skin, dx or hx",CA_103.1,Melanomas of the skin,PRSWEB_PHECODE172.1_UKBB-SAIGE-HRC-X172.1_PT_MGI_20200608_PRS.txt
+Thyroid,193,Thyroid cancer,CA_110.1,Malignant neoplasm of the thyroid,PRSWEB_PHECODE193_GWAS-Catalog-r2019-05-03-X193_PT_MGI_20200608_PRS.txt
