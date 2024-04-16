@@ -1,0 +1,21 @@
+adj,est,method,miss_dat
+Unadjusted,0.20385909839295258,True,NA
+Unadjusted,0.20367519246556526,Complete Case,MCAR
+Unadjusted,0.12095104556751354,Complete Case,MAR
+Unadjusted,0.05667859603230841,Complete Case,MNAR
+Unadjusted,0.20261043352580593,Multiple Imputation,MCAR
+Unadjusted,0.1792216474808147,Multiple Imputation,MAR
+Unadjusted,0.07706122507850977,Multiple Imputation,MNAR
+Unadjusted,0.2031545640408718,Multiple Imputation w/ PRS,MCAR
+Unadjusted,0.20860081219747936,Multiple Imputation w/ PRS,MAR
+Unadjusted,0.1057858853090233,Multiple Imputation w/ PRS,MNAR
+Adjusted,0.19587369231394136,True,NA
+Adjusted,0.1957788282212544,Complete Case,MCAR
+Adjusted,0.1150787868225445,Complete Case,MAR
+Adjusted,0.049147439440089,Complete Case,MNAR
+Adjusted,0.1947829829770031,Multiple Imputation,MCAR
+Adjusted,0.160568158003894,Multiple Imputation,MAR
+Adjusted,0.07332360944723235,Multiple Imputation,MNAR
+Adjusted,0.19541131064070744,Multiple Imputation w/ PRS,MCAR
+Adjusted,0.19042234284056095,Multiple Imputation w/ PRS,MAR
+Adjusted,0.10059699791045403,Multiple Imputation w/ PRS,MNAR
