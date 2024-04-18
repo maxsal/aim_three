@@ -387,20 +387,20 @@ for (sample_size in sample_sizes) {
 #   )
 
 # ####
-# map_generate_data <- function(
-#   iterations = 1000,
-#   size = 50000,
-#   mu = c(0, 0.5359, 0, 0, 0.4811, 0.8864, 0, 0),
-#   mat = NULL
-# ) {
-#   purrr::map(
-#     seq_len(iterations),
-#     \(x) {
-#       set.seed(x)
-#       generate_data(n = size, mu = mu, mat = mat)
-#     },
-#     .progress = "generating data")
-# }
+map_generate_data <- function(
+  iterations = 1000,
+  size = 50000,
+  mu = c(0, 0.5359, 0, 0, 0.4811, 0.8864, 0, 0),
+  mat = NULL
+) {
+  purrr::map(
+    seq_len(iterations),
+    \(x) {
+      set.seed(x)
+      generate_data(n = size, mu = mu, mat = mat)
+    },
+    .progress = "generating data")
+}
 
 # sample_data <- function(
 #   data_list,
