@@ -17,34 +17,39 @@ re_sample <- function(x, size, prob = NULL, reps = 1, replace = TRUE, boot = FAL
 
 
 # make data missing at random
-make_missing <- function(data, intercept = -2.5, target_var, vars = NULL, target_var_wgt = NULL, var_wgts = NULL, scale_cont = TRUE, mech = "MAR") {
+make_missing <- function(data, intercept = -2.5, target_var, vars = NULL, target_var_wgt = NULL, var_wgts = NULL, scale_cont = TRUE, mech = "MAR", mcar_prob = 0.25) {
     dat      <- data.table::copy(data)
-    if (is.null(vars)) {
-        vars <- setdiff(names(dat), target_var)
-    }
-    if (scale_cont) {
-        num_vars  <- names(which(map_lgl(dat |> select(vars), is.numeric)))
-        bin_vars  <- names(which(map_lgl(dat |> select(vars), \(x) all(na.omit(x) %in% 0:1))))
-        cont_vars <- setdiff(num_vars, bin_vars)
-        dat <- dat |>
-            dplyr::mutate(dplyr::across(tidyselect::all_of(cont_vars), scale))
-    }
-    if (is.null(var_wgts)) {
-        var_wgts <- rep(1, length(vars))
-    }
-    if (mech == "MAR") {
-        score <- as.matrix(cbind(1, dat |> dplyr::select(tidyselect::all_of(vars)) |> as.matrix())) %*% c(intercept, var_wgts)
-    } else if (mech %in% c("MNAR", "NMAR")) {
-        if (is.null(target_var_wgt)) {
-            target_var_wgt <- 1
+    if (mech == "MCAR") {
+        miss_ind <- rbinom(nrow(data), 1, prob = mcar_prob)
+        dat[miss_ind == 1, target_var] <- NA
+    } else {
+        if (is.null(vars)) {
+            vars <- setdiff(names(dat), target_var)
         }
-        score <- as.matrix(cbind(1, dat |> dplyr::select(tidyselect::all_of(c(vars, target_var))) |> as.matrix())) %*% c(intercept, var_wgts, target_var_wgt)
+        if (scale_cont) {
+            num_vars  <- names(which(map_lgl(dat |> select(vars), is.numeric)))
+            bin_vars  <- names(which(map_lgl(dat |> select(vars), \(x) all(na.omit(x) %in% 0:1))))
+            cont_vars <- setdiff(num_vars, bin_vars)
+            dat <- dat |>
+                dplyr::mutate(dplyr::across(tidyselect::all_of(cont_vars), scale))
+        }
+        if (is.null(var_wgts)) {
+            var_wgts <- rep(1, length(vars))
+        }
+        if (mech == "MAR") {
+            score <- as.matrix(cbind(1, dat |> dplyr::select(tidyselect::all_of(vars)) |> as.matrix())) %*% c(intercept, var_wgts)
+        } else if (mech %in% c("MNAR", "NMAR")) {
+            if (is.null(target_var_wgt)) {
+                target_var_wgt <- 1
+            }
+            score <- as.matrix(cbind(1, dat |> dplyr::select(tidyselect::all_of(c(vars, target_var))) |> as.matrix())) %*% c(intercept, var_wgts, target_var_wgt)
+        }
+        
+        # score                   <- intercept + scale(x[["age"]])[, 1] + scale(x[["glucose"]])[, 1] + x[["female"]] + x[["smoke"]]
+        miss_prob                      <- plogis(score)
+        miss_ind                       <- rbinom(length(miss_prob), 1, miss_prob)
+        dat[miss_ind == 1, target_var] <- NA
     }
-    
-    # score                   <- intercept + scale(x[["age"]])[, 1] + scale(x[["glucose"]])[, 1] + x[["female"]] + x[["smoke"]]
-    miss_prob                      <- plogis(score)
-    miss_ind                       <- rbinom(length(miss_prob), 1, miss_prob)
-    dat[miss_ind == 1, target_var] <- NA
     dat
 }
 

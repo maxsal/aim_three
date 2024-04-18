@@ -6,7 +6,7 @@
         confint(mod)
     })[var, ]
     data.table(
-        var = var,
+        variable = var,
         est = est,
         lo = ci[[1]],
         hi = ci[[2]]
@@ -41,7 +41,7 @@
     row_ind <- which(mod$term == var)
     col_ind <- which(names(mod) %in% c("estimate", "2.5 %", "97.5 %"))
     data.table(
-        var = var,
+        variable = var,
         est = mod[row_ind, col_ind[1]],
         lo = mod[row_ind, col_ind[2]],
         hi = mod[row_ind, col_ind[3]]
@@ -73,7 +73,7 @@
     row_ind <- which(mod$term == var)
     col_ind <- which(names(mod) %in% c("estimate", "2.5 %", "97.5 %"))
     data.table(
-        var = var,
+        variable = var,
         est = mod[row_ind, col_ind[1]],
         lo = mod[row_ind, col_ind[2]],
         hi = mod[row_ind, col_ind[3]]
@@ -106,7 +106,7 @@
     row_ind <- which(mod$term == var)
     col_ind <- which(names(mod) %in% c("estimate", "2.5 %", "97.5 %"))
     data.table(
-        var = var,
+        variable = var,
         est = mod[row_ind, col_ind[1]],
         lo = mod[row_ind, col_ind[2]],
         hi = mod[row_ind, col_ind[3]]
@@ -137,7 +137,7 @@
     lo <- pooled_mean - (qnorm(0.975) * pooled_se)
     hi <- pooled_mean + (qnorm(0.975) * pooled_se)
 
-    data.table(var = var, est = pooled_mean, lo = lo, hi = hi, var = pooled_var)
+    data.table(variable = var, est = pooled_mean, lo = lo, hi = hi, var = pooled_var)
 }
 
 .svyglm_pool_obese1 <- function(f, imp_object, weights, var, fam = "gaussian") {
@@ -172,7 +172,7 @@
     lo <- pooled_mean - (qnorm(0.975) * pooled_se)
     hi <- pooled_mean + (qnorm(0.975) * pooled_se)
 
-    data.table(var = var, est = pooled_mean, lo = lo, hi = hi, var = pooled_var)
+    data.table(variable = var, est = pooled_mean, lo = lo, hi = hi, var = pooled_var)
 }
 
 .svyglm_pool_obese2 <- function(f, imp_object, weights, var, fam = "gaussian") {
@@ -207,7 +207,7 @@
     lo <- pooled_mean - (qnorm(0.975) * pooled_se)
     hi <- pooled_mean + (qnorm(0.975) * pooled_se)
 
-    data.table(var = var, est = pooled_mean, lo = lo, hi = hi, var = pooled_var)
+    data.table(variance = var, est = pooled_mean, lo = lo, hi = hi, var = pooled_var)
 }
 
 # Custom function to apply .glm_pool with progress
