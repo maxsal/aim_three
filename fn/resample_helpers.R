@@ -53,17 +53,52 @@ make_missing <- function(data, intercept = -2.5, target_var, vars = NULL, target
     dat
 }
 
-simul_diag <- function(cleaned, truth) {
-    raw_bias <- mean(cleaned$est - truth)
-    per_bias <- 100 * abs(raw_bias / truth)
-    cov_rate <- mean(cleaned$lo < truth & cleaned$hi > truth)
-    avg_wide <- mean(cleaned$hi - cleaned$lo)
-    rmse <- sqrt(mean((cleaned$est - truth)^2))
-    data.table(
-        raw_bias = raw_bias,
-        per_bias = per_bias,
-        cov_rate = cov_rate,
-        avg_wide = avg_wide,
-        rmse     = rmse
-    )
-}
+# simul_diag <- function(cleaned, truth) {
+#     raw_bias <- mean(cleaned$est - truth)
+#     per_bias <- 100 * abs(raw_bias / truth)
+#     cov_rate <- mean(cleaned$lo < truth & cleaned$hi > truth)
+#     avg_wide <- mean(cleaned$hi - cleaned$lo)
+#     rmse <- sqrt(mean((cleaned$est - truth)^2))
+#     data.table(
+#         raw_bias = raw_bias,
+#         per_bias = per_bias,
+#         cov_rate = cov_rate,
+#         avg_wide = avg_wide,
+#         rmse     = rmse
+#     )
+# }
+
+  simul_diag <- function(cleaned, truth) {
+      raw_bias <- mean(cleaned$est - truth)
+      per_bias <- mean(100 * abs(raw_bias / truth))
+      cov_rate <- mean(cleaned$lo < truth & cleaned$hi > truth)
+      avg_wide <- mean(cleaned$hi - cleaned$lo)
+      rmse <- sqrt(mean((cleaned$est - truth)^2))
+      data.table(
+          adj       = cleaned[, unique(adj)],
+          miss_data = cleaned[, unique(miss_data)],
+          weight    = cleaned[, unique(weight)],
+          size      = cleaned[, unique(size)],
+          method    = cleaned[, unique(method)],
+          raw_bias  = raw_bias,
+          per_bias  = per_bias,
+          cov_rate  = cov_rate,
+          avg_wide  = avg_wide,
+          rmse      = rmse
+      )
+  }
+
+    simul_diag2 <- function(cleaned, truth) {
+        raw_bias <- mean(cleaned$est - truth)
+        per_bias <- mean(100 * abs(raw_bias / truth))
+        cov_rate <- mean(cleaned$lo < truth & cleaned$hi > truth)
+        avg_wide <- mean(cleaned$hi - cleaned$lo)
+        rmse <- sqrt(mean((cleaned$est - truth)^2))
+        data.table(
+            raw_bias  = raw_bias,
+            per_bias  = per_bias,
+            cov_rate  = cov_rate,
+            avg_wide  = avg_wide,
+            rmse      = rmse
+        )
+    }

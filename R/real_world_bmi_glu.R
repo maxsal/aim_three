@@ -9,16 +9,17 @@ p <- qread("data/private/mgi_pim0x_20230322.qs")
 l <- qread("data/private/mgi_labs_cleaned_20230322.qs")
 
 prs <- qread("data/private/ex_prs_processed.qs")
-prs <- prs[, .(id, bmi_prs = bmi, t2d_prs = t2d, glucose_prs = glucose)]
+prs <- prs[, .(id, bmi_prs = bmi, glucose_prs = glucose)]
 
 ## remove people with missing weight values
 w <- w[!is.na(ip_selection), ]
 
-## identify the intersection
-ids <- reduce(list(d[, id], w[, id], p[, id]), intersect)
-
-d <- d[id %in% ids, ]
-w <- w[id %in% ids, ]
+## keep people with non-missing weights
+d   <- d[id %in% w[, id], ]
+w   <- w[id %in% w[, id], ]
+p   <- p[id %in% w[, id], ]
+l   <- l[id %in% w[, id], ]
+prs <- prs[id %in% w[, id], ]
 
 ## merge data
 comb <- reduce(
@@ -28,7 +29,7 @@ comb <- reduce(
         p[, .(id, t2d = EM_202.2)],
         l[, .(id, glucose = glucose_med)]
     ),
-    left_join,
+    full_join,
     by = "id"
 )
 
@@ -127,34 +128,44 @@ res_tab <- tribble(
         mdm = factor(mdm, levels = c("Complete case", "Imputation", "Imputation w/ PRS", "Imputation w/ PRS (subset)"))
     )
 
-glu_bmi_p_nhanes_est <- tibble(
-    adj = factor(c("Unadjusted", "Adjusted"), c("Unadjusted", "Adjusted")),
-    xmin = c(-Inf, -Inf),
-    xmax = c(Inf, Inf),
-    ymin = c(0.624, 0.601),
-    ymax = c(1.098, 1.061),
-    est = c(NA_real_, NA_real_),
-    lo = c(NA_real_, NA_real_),
-    hi = c(NA_real_, NA_real_),
-    mdm = c(NA_character_, NA_character_),
-    weight = c(NA_character_, NA_character_)
-)
+# glu_bmi_p_nhanes_est <- tibble(
+#     adj = factor(c("Unadjusted", "Adjusted"), c("Unadjusted", "Adjusted")),
+#     xmin = c(-Inf, -Inf),
+#     xmax = c(Inf, Inf),
+#     ymin = c(0.624, 0.601),
+#     ymax = c(1.098, 1.061),
+#     est = c(NA_real_, NA_real_),
+#     lo = c(NA_real_, NA_real_),
+#     hi = c(NA_real_, NA_real_),
+#     mdm = c(NA_character_, NA_character_),
+#     weight = c(NA_character_, NA_character_)
+# )
 
 res_tab |>
     mutate(
-        weight = if_else(weight == "Yes", "Weighted", "Unweighted")
+        weight = if_else(weight == "Yes", "Weighted", "Unweighted"),
+        mdm = case_when(
+            mdm == "Complete case" ~ "Complete case",
+            mdm == "Imputation" ~ "OD-imputed",
+            mdm == "Imputation w/ PRS" ~ "OD-PRS-imputed",
+            mdm == "Imputation w/ PRS (subset)" ~ "OD-PRS-imputed (subset)"
+        ),
+        adj = factor(case_when(
+            adj == "Unadjusted" ~ "Unadjusted",
+            adj == "Adjusted" ~ "Covariate-adjusted"
+        ), c("Unadjusted", "Covariate-adjusted"))
     ) |>
     # filter(mdm != "Imputation w/ PRS") |>
-    ggplot(aes(x = mdm, y = est, ymin = lo, ymax = hi, color = weight)) +
-        geom_rect(
-        data = glu_bmi_p_nhanes_est,
-        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, x = NULL, y = NULL),
-        fill = "grey",
-        alpha = 0.5,
-        show.legend = FALSE,
-        inherit.aes = FALSE
-    ) +
-    geom_pointrange(position = position_dodge(width = 0.5)) +
+    ggplot(aes(x = mdm, y = est, ymin = lo, ymax = hi, color = weight, shape = weight)) +
+    # geom_rect(
+    #     data = glu_bmi_p_nhanes_est,
+    #     aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, x = NULL, y = NULL),
+    #     fill = "grey",
+    #     alpha = 0.5,
+    #     show.legend = FALSE,
+    #     inherit.aes = FALSE
+    # ) +
+    geom_pointrange(size = 1, linewidth = 1, position = position_dodge(width = 0.5)) +
         labs(
             title = "BMI coefficient for glucose",
             x = "Missing data method",
@@ -171,7 +182,7 @@ res_tab |>
     )
 
 ggsave(
-    "bin/bmi_glucose_coef_w_range.pdf",
+    "bin/glucose_bmi_coef.pdf",
     width = 6, height = 5,
     device = cairo_pdf
 )
@@ -203,7 +214,7 @@ cc_dsn <- svydesign(
 ccw_un_est <- .svyglm(f, var = exposure, design = cc_dsn)
 ccw_adj_est <- .svyglm(f_cov, var = exposure, design = cc_dsn)
 
-tmp <- glm(f_cov, data = dat)
+# tmp <- glm(f_cov, data = dat)
 
 # IMPUTATION
 imp <- mice::mice(dat, m = 5, seed = 123, printFlag = FALSE)
@@ -274,8 +285,8 @@ res_tab |>
         weight = if_else(weight == "Yes", "Weighted", "Unweighted")
     ) |>
     # filter(mdm != "Imputation w/ PRS") |>
-    ggplot(aes(x = mdm, y = est, ymin = lo, ymax = hi, color = weight)) +
-    geom_pointrange(position = position_dodge(width = 0.5)) +
+    ggplot(aes(x = mdm, y = est, ymin = lo, ymax = hi, color = weight, shape = weight)) +
+    geom_pointrange(size = 1, linewidth = 1, position = position_dodge(width = 0.5)) +
     labs(
         title = "Glucose coefficient for BMI",
         x = "Missing data method",
@@ -290,7 +301,121 @@ res_tab |>
     )
 
 ggsave(
-    "bin/glucose_bmi_coef.pdf",
+    "bin/bmi_glucose_coef.pdf",
     width = 6, height = 5,
+    device = cairo_pdf
+)
+
+# MISSINGNESS PLOT AND TABLE ---------------------------------------------------
+full <- dat_prs
+full$missing <- ifelse(complete.cases(full), "Fully observed", "Any missing")
+full$cc <- ifelse(complete.cases(full), "Complete case (adjusted)",
+                  ifelse(complete.cases(full[, .(glucose, bmi)]), "Complete case (unadjusted)", NA))
+
+
+# OVERALL
+# Complete case (adjusted)
+    # Any missing
+    # No missing
+# Complete case (adjusted) - with PRS
+
+sub <- na.omit(full)
+
+libri(gtsummary)
+
+full |>
+    mutate(
+        `BMI PRS` = scale(bmi_prs)[, 1],
+        `Glucose PRS` = scale(glucose_prs)[, 1]
+    ) |>
+    select(
+        Age = age,
+        Female = female,
+        `Non-Hispanic White` = nhw,
+        `Smoking status (ever)` = smoke,
+        `BMI` = bmi,
+        `Glucose` = glucose,
+        `BMI PRS`,
+        `Glucose PRS`, missing
+    ) |>
+    tbl_summary(
+        by = missing,
+        missing_text = "Missing",
+        statistic = list(
+            all_continuous() ~ "{mean} ({sd})",
+            all_dichotomous() ~ "{p} ({n})"),
+        digits = list(
+            all_continuous() ~ c(1, 1),
+            all_dichotomous() ~ c(1, 0),
+            contains("PRS") ~ c(3, 3)
+        )) |>
+    add_p() |>
+    add_overall()
+
+full |>
+    mutate(
+        `BMI PRS` = scale(bmi_prs)[, 1],
+        `Glucose PRS` = scale(glucose_prs)[, 1]
+    ) |>
+    drop_na(bmi_prs, glucose_prs) |>
+    select(
+        Age = age,
+        Female = female,
+        `Non-Hispanic White` = nhw,
+        `Smoking status (ever)` = smoke,
+        `BMI` = bmi,
+        `Glucose` = glucose,
+        `BMI PRS`,
+        `Glucose PRS`, missing
+    ) |>
+    tbl_summary(
+        by = missing,
+        missing_text = "Missing",
+        statistic = list(
+            all_continuous() ~ "{mean} ({sd})",
+            all_dichotomous() ~ "{p} ({n})"
+        ),
+        digits = list(
+            all_continuous() ~ c(1, 1),
+            all_dichotomous() ~ c(1, 0),
+            contains("PRS") ~ c(3, 3)
+        )
+    ) |>
+    add_p() |>
+    add_overall()
+
+full |>
+    select(-missing) |>
+    rename(
+        `Glucose (lab)` = glucose,
+        `BMI` = bmi,
+        Age = age,
+        Female = female,
+        `Non-Hispanic White` = nhw,
+        `Smoking status (ever)` = smoke,
+        `Glucose PRS` = glucose_prs,
+        `BMI PRS` = bmi_prs
+    ) |>
+    map_dbl(\(x) sum(is.na(x)) / length(x)) |>
+    enframe() |>
+    arrange(desc(value)) |>
+    ggplot(aes(x = reorder(name, value), y = value)) +
+    geom_segment(aes(xend = name, yend = 0), linewidth = 2, color = "grey") +
+    geom_point(size = 4) +
+    scale_y_continuous(labels = scales::percent, limits = c(0, 0.5)) +
+    labs(
+        title = "Missingness of relavent variables in MGI",
+        x = "Variable",
+        y = "Missingness (%)"
+    ) +
+    coord_flip() +
+    theme_ms() +
+    theme(
+        panel.grid.major.y = element_blank()
+    )
+ggsave(
+    "results/missingness_plot.pdf",
+    width = 6,
+    height = 5,
     device = cairo_pdf
 )
