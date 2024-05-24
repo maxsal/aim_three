@@ -12,7 +12,7 @@ exposure <- "bmi"
 ex_only_res <- map(
     sample_sizes,
     \(i) {
-        fread(glue("results/simulations/exposure_only/{outcome}_{exposure}_n{i}_i{iterations}_diag_random.csv"))[, `:=` (size = i)]
+        fread(glue("results/simulations/exposure_only/{outcome}_{exposure}_n{i}_i{iterations}_biased_simul_diag.csv"))[, `:=` (size = i)]
     }
 )
 
@@ -20,7 +20,7 @@ ex_only_res <- map(
 ex_out_res <- map(
     sample_sizes,
     \(i) {
-        fread(glue("results/simulations/exposure_and_outcome/{outcome}_{exposure}_n{i}_i{iterations}_exoutmiss_diag_random.csv"))[, `:=`(size = i)]
+        fread(glue("results/simulations/exposure_and_outcome/{outcome}_{exposure}_n{i}_i{iterations}_exoutmiss_biased_simul_diag.csv"))[, `:=`(size = i)]
     }
 )
 
@@ -50,17 +50,18 @@ make_diag_plot <- function(
         ) |>
         dplyr::mutate(
             adj = factor(adj, levels = c("Unadjusted", "Covariate-adjusted")),
-            miss_dat = factor(miss_dat, levels = c("MCAR", "MAR", "MNAR")),
+            miss_dat = factor(miss_data, levels = c("MCAR", "MAR", "MNAR")),
             method = factor(method, levels = c("Complete case", "woPRS-imputed", "PRS-imputed"))
         ) |>
         filter(adj == "Covariate-adjusted") |>
-        dplyr::select(size, adj, method, miss_dat, {{ diagnostic_var }}) |>
+        dplyr::select(size, adj, method, miss_dat, weight, {{ diagnostic_var }}) |>
         ggplot(aes(x = size, y = {{ diagnostic_var }}, shape = method, color = miss_dat, linetype = method)) +
         geom_hline(yintercept = hline, linetype = "dashed") +
         geom_line(linewidth = 1) +
         geom_point(size = 4) +
         scale_x_continuous(breaks = sample_sizes, limits = c(0, max(sample_sizes)), labels = scales::comma) +
         scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+        facet_wrap(~weight) +
         labs(
             title = stringr::str_wrap(title, title_wrap),
             x = x_lab,
@@ -87,7 +88,7 @@ ex_only_cov_rate_plot <- make_diag_plot(
 )
 ggsave(
     plot = ex_only_cov_rate_plot,
-    glue("results/{outcome}_{exposure}_i{iterations}_exmiss_coverage_rate_random.pdf"),
+    glue("results/{outcome}_{exposure}_i{iterations}_exmiss_coverage_rate_biased.pdf"),
     width = 8,
     height = 5,
     device = cairo_pdf
@@ -106,7 +107,7 @@ ex_and_out_cov_rate_plot <- make_diag_plot(
 )
 ggsave(
     plot = ex_and_out_cov_rate_plot,
-    glue("results/{outcome}_{exposure}_i{iterations}_exoutmiss_coverage_rate_random.pdf"),
+    glue("results/{outcome}_{exposure}_i{iterations}_exoutmiss_coverage_rate_biased.pdf"),
     width = 8,
     height = 5,
     device = cairo_pdf
@@ -131,11 +132,11 @@ make_per_bias_plot <- function(
         ) |>
         dplyr::mutate(
             adj = factor(adj, levels = c("Unadjusted", "Covariate-adjusted")),
-            miss_dat = factor(miss_dat, levels = c("MCAR", "MAR", "MNAR")),
+            miss_dat = factor(miss_data, levels = c("MCAR", "MAR", "MNAR")),
             method = factor(method, levels = c("Complete case", "woPRS-imputed", "PRS-imputed"))
         ) |>
         filter(adj == "Covariate-adjusted") |>
-        dplyr::select(size, adj, method, miss_dat, per_bias) |>
+        dplyr::select(size, adj, method, miss_dat, weight, per_bias) |>
         ggplot(aes(x = size, y = per_bias / 100, shape = method, color = miss_dat, linetype = method)) +
         geom_hline(yintercept = 0, linetype = "dashed") +
         geom_line(linewidth = 1) +
@@ -148,7 +149,7 @@ make_per_bias_plot <- function(
             y = "Percent bias (%)",
             caption = "Dashed line represents no bias"
         ) +
-        # facet_wrap(~ adj) +
+        facet_wrap(~ weight) +
         scale_color_ms() +
         theme_ms() +
         theme(
@@ -160,7 +161,7 @@ make_per_bias_plot <- function(
 ex_only_per_bias_plot <- make_per_bias_plot(ex_only_res)
 ggsave(
     plot = ex_only_per_bias_plot,
-    glue("results/{outcome}_{exposure}_i{iterations}_exmiss_percent_bias_random.pdf"),
+    glue("results/{outcome}_{exposure}_i{iterations}_exmiss_percent_bias_biased.pdf"),
     width = 8,
     height = 5,
     device = cairo_pdf
@@ -170,7 +171,7 @@ ggsave(
 ex_out_per_bias_plot <- make_per_bias_plot(ex_out_res)
 ggsave(
     plot = ex_out_per_bias_plot,
-    glue("results/{outcome}_{exposure}_i{iterations}_exoutmiss_percent_bias_random.pdf"),
+    glue("results/{outcome}_{exposure}_i{iterations}_exoutmiss_percent_bias_biased.pdf"),
     width = 8,
     height = 5,
     device = cairo_pdf
@@ -191,7 +192,7 @@ ex_only_cov_per_comb_plot <- ((ex_only_cov_rate_plot +
     plot_layout(heights = c(5, 5, 1))
 ggsave(
     plot = ex_only_cov_per_comb_plot,
-    glue("results/{outcome}_{exposure}_i{iterations}_exmiss_coverage_rate_percent_bias_random.pdf"),
+    glue("results/{outcome}_{exposure}_i{iterations}_exmiss_coverage_rate_percent_bias_biased.pdf"),
     width = 7,
     height = 6,
     device = cairo_pdf
@@ -211,7 +212,7 @@ ex_out_cov_per_comb_plot <- ((ex_and_out_cov_rate_plot +
     plot_layout(heights = c(5, 5, 1))
 ggsave(
     plot = ex_out_cov_per_comb_plot,
-    glue("results/{outcome}_{exposure}_i{iterations}_exoutmiss_coverage_rate_percent_bias_random.pdf"),
+    glue("results/{outcome}_{exposure}_i{iterations}_exoutmiss_coverage_rate_percent_bias_biased.pdf"),
     width = 7,
     height = 6,
     device = cairo_pdf
@@ -229,23 +230,25 @@ cov_per_comb_plot <- (ex_only_cov_rate_plot +
     labs(title = "B. Exposure and outcome, coverage rate", caption = "") +
     theme(legend.position = "none")) +
 
-(ex_only_per_bias_plot +
-    labs(title = "C. Exposure only, percent bias", caption = "") +
-    scale_y_continuous(limits = c(0, 0.8), labels = scales::percent) +
-    # ylim(0, 0.8) +
-    theme(legend.position = "none")) + (ex_out_per_bias_plot +
-    scale_y_continuous(limits = c(0, 0.8), labels = scales::percent) +
-    labs(title = "D. Exposure and outcome, percent bias", caption = "") +
-    theme(legend.position = "none")) +
+    (ex_only_per_bias_plot +
+        labs(title = "C. Exposure only, percent bias", caption = "") +
+        scale_y_continuous(limits = c(0, 1.6), labels = scales::percent) +
+        # ylim(0, 0.8) +
+        theme(legend.position = "none")) + (ex_out_per_bias_plot +
+        scale_y_continuous(limits = c(0, 1.6), labels = scales::percent) +
+        labs(title = "D. Exposure and outcome, percent bias", caption = "") +
+        theme(legend.position = "none")) +
     ex_out_leg +
     plot_layout(design = layout, heights = c(10, 10, 1))
+
 ggsave(
     plot = cov_per_comb_plot,
-    glue("results/{outcome}_{exposure}_i{iterations}_combined_coverage_rate_percent_bias_random.pdf"),
-    width = 9,
+    glue("results/{outcome}_{exposure}_i{iterations}_combined_coverage_rate_percent_bias_biased.pdf"),
+    width = 12,
     height = 7,
     device = cairo_pdf
 )
+
 ##
 
 rbindlist(res) |>
