@@ -218,6 +218,16 @@ map_glm_pool <- function(data_list, formula, exposure_variable) {
         .progress = TRUE
     )
 }
+
+future_map_glm_pool <- function(data_list, formula, exposure_variable) {
+    future_map_dfr(
+        data_list,
+        \(x) .glm_pool(formula, x, exposure_variable),
+        .progress = TRUE,
+        .options = furrr_options(seed = TRUE)
+    )
+}
+
 map_svyglm_pool <- function(imp_list, formula, weights_list, var, fam = "gaussian") {
     map_dfr(
         seq_along(imp_list),
@@ -233,6 +243,16 @@ map_glm <- function(data_list, formula, exposure_variable) {
         .progress = TRUE
     )
 }
+
+future_map_glm <- function(data_list, formula, exposure_variable) {
+    future_map_dfr(
+        data_list,
+        \(x) .glm(formula, x, exposure_variable),
+        .progress = TRUE,
+        .options = furrr_options(seed = TRUE)
+    )
+}
+
 map_svyglm <- function(data_list, formula, exposure_variable) {
     map_dfr(
         data_list,

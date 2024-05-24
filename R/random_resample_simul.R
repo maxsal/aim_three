@@ -6,8 +6,9 @@ ms::libri(
 
 if (availableCores() <= 8) {
     plan(multisession, workers = 6)
-} else if (availableCores() >= 64) {
-    plan(multicore, workers = 18)
+} else {
+    wkrs <- min(c(availableCores() / 2, 24))
+    plan(multicore, workers = wkrs)
 }
 
 outcome      <- "glucose"
@@ -173,41 +174,43 @@ for (sample_size in sample_sizes) {
     mar_dat <- map(
         samples,
         \(x) {
-            cbind(x[, .(id)], make_missing(
-                data       = x[, !c("id")],
+            make_missing(
+                data       = x,
                 target_var = exposure,
+                vars       = c(outcome, covs),
                 mech       = "MAR",
                 scale_cont = FALSE,
-                intercept = -3.5
-            ))
+                intercept  = -3.25
+            )
         }
     )
     mnar_dat <- map(
         samples,
         \(x) {
-            cbind(x[, .(id)], make_missing(
-                data       = x[, !c("id")],
+            make_missing(
+                data       = x,
                 target_var = exposure,
+                vars       = c(outcome, covs),
                 mech       = "MNAR",
-                intercept  = -4.25,
+                intercept  = -4,
                 scale_cont = FALSE
-            ))
+            )
         }
     )
 
     # imputation
     cli_progress_step("Imputing data")
     these_vars <- c(outcome, exposure, covs)
-    mcar_imp   <- map(mcar_dat, \(x) mice(data = x[, ..these_vars]), .progress = "mcar imputation")
-    mar_imp    <- map(mar_dat, \(x) mice(data = x[, ..these_vars]), .progress = "mar imputation")
-    mnar_imp   <- map(mnar_dat, \(x) mice(data = x[, ..these_vars]), .progress = "mnar imputation")
+    mcar_imp   <- future_map(mcar_dat, \(x) mice(data = x[, ..these_vars]), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mar_imp    <- future_map(mar_dat, \(x) mice(data = x[, ..these_vars]), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mnar_imp   <- future_map(mnar_dat, \(x) mice(data = x[, ..these_vars]), .progress = TRUE, .options = furrr_options(seed = TRUE))
 
     # imputation with prs
     cli_progress_step("Imputing data with PRS")
     these_vars_prs <- c(these_vars, "bmi_prs", "glucose_prs")
-    mcar_imp_prs   <- map(mcar_dat, \(x) mice(x[, ..these_vars_prs]), .progress = "mcar prs imputation")
-    mar_imp_prs    <- map(mar_dat, \(x) mice(x[, ..these_vars_prs]), .progress = "mar prs imputation")
-    mnar_imp_prs   <- map(mnar_dat, \(x) mice(x[, ..these_vars_prs]), .progress = "mnar prs imputation")
+    mcar_imp_prs   <- future_map(mcar_dat, \(x) mice(x[, ..these_vars_prs]), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mar_imp_prs    <- future_map(mar_dat, \(x) mice(x[, ..these_vars_prs]), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mnar_imp_prs   <- future_map(mnar_dat, \(x) mice(x[, ..these_vars_prs]), .progress = TRUE, .options = furrr_options(seed = TRUE))
 
     # List of data sets
     data_sets <- list(
@@ -231,11 +234,11 @@ for (sample_size in sample_sizes) {
         un_model_name <- paste0(data_name, "_un_betas")
         adj_model_name <- paste0(data_name, "_adj_betas")
         if ("mids" %in% class(data_sets[[data_name]][[1]])) {
-            results[[un_model_name]]  <- map_glm_pool(data_sets[[data_name]], f, exposure)
-            results[[adj_model_name]] <- map_glm_pool(data_sets[[data_name]], f_cov, exposure)
+            results[[un_model_name]]  <- future_map_glm_pool(data_sets[[data_name]], f, exposure)
+            results[[adj_model_name]] <- future_map_glm_pool(data_sets[[data_name]], f_cov, exposure)
         } else {
-            results[[un_model_name]]  <- map_glm(data_sets[[data_name]], f, exposure)
-            results[[adj_model_name]] <- map_glm(data_sets[[data_name]], f_cov, exposure)
+            results[[un_model_name]]  <- future_map_glm(data_sets[[data_name]], f, exposure)
+            results[[adj_model_name]] <- future_map_glm(data_sets[[data_name]], f_cov, exposure)
         }
     }
 
