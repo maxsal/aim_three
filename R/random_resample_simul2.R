@@ -27,40 +27,6 @@ means <- c(
     smoke = -3.2111110600884e-17, bmi_prs = -1.15519592499013e-14,
     glucose_prs = -7.07320752607373e-15
 )
-# correlation matrix
-# mat <- structure(
-#     c(
-#         1, -0.138472771069173, 0.262539473913268, 0.0468405451550121,
-#         0.167566551860689, 0.166092379443715, -0.0556810150535702, -0.00389196515634526,
-#         -0.138472771069173, 1, -0.179053565661372, 0.0235312040482812,
-#         -0.115388276481859, -0.0448208957108339, 0.0237946498434344,
-#         -0.00768675768547915, 0.262539473913268, -0.179053565661372,
-#         1, 0.203021425445865, 0.0915425306467291, 0.0580461239663158,
-#         0.0826686083769788, 0.0905772810900326, 0.0468405451550121, 0.0235312040482812,
-#         0.203021425445865, 1, 0.0204487766742965, -0.00921594984143435,
-#         0.303774286296125, -0.00405822627168262, 0.167566551860689, -0.115388276481859,
-#         0.0915425306467291, 0.0204487766742965, 1, 0.0801551548165317,
-#         0.0743051790132458, 0.00156663252186455, 0.166092379443715, -0.0448208957108339,
-#         0.0580461239663158, -0.00921594984143435, 0.0801551548165317,
-#         1, -0.0365680107481083, 0.0227178773800331, -0.0556810150535702,
-#         0.0237946498434344, 0.0826686083769788, 0.303774286296125, 0.0743051790132458,
-#         -0.0365680107481083, 1, 0.0636833004109739, -0.00389196515634526,
-#         -0.00768675768547915, 0.0905772810900326, -0.00405822627168262,
-#         0.00156663252186455, 0.0227178773800331, 0.0636833004109739,
-#         1
-#     ),
-#     dim = c(8L, 8L),
-#     dimnames = list(
-#         c(
-#             "age", "female", "glucose", "bmi", "smoke", "nhw",
-#             "bmi_prs", "glucose_prs"
-#         ),
-#         c(
-#             "age", "female", "glucose", "bmi", "smoke", "nhw",
-#             "bmi_prs", "glucose_prs"
-#         )
-#     )
-# ) |> as.matrix
 
 # covariance matrix
 mat <- structure(c(
@@ -174,6 +140,7 @@ for (sample_size in sample_sizes) {
             x
         }
     )
+
     mar_dat <- map(
         samples,
         \(x) {
@@ -200,18 +167,18 @@ for (sample_size in sample_sizes) {
 
     # imputation
     cli_progress_step("Imputing data")
-    these_vars <- c(exposure, outcome, covs)
+    these_vars <- c(outcome, exposure, covs)
     
-    mcar_imp <- future_map(mcar_dat, \(x) mice(data = x[, ..these_vars], m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
-    mar_imp  <- future_map(mar_dat, \(x) mice(data = x[, ..these_vars], m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
-    mnar_imp <- future_map(mnar_dat, \(x) mice(data = x[, ..these_vars], m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mcar_imp <- future_map(mcar_dat, \(x) mice(data = x |> select(all_of(these_vars)), m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mar_imp <- future_map(mar_dat, \(x) mice(data = x |> select(all_of(these_vars)), m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mnar_imp <- future_map(mnar_dat, \(x) mice(data = x |> select(all_of(these_vars)), m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
 
     # imputation with prs
     cli_progress_step("Imputing data with PRS")
     these_vars_prs <- c(these_vars, "bmi_prs", "glucose_prs")
-    mcar_imp_prs <- future_map(mcar_dat, \(x) mice(x[, ..these_vars_prs], m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
-    mar_imp_prs  <- future_map(mar_dat, \(x) mice(x[, ..these_vars_prs], m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
-    mnar_imp_prs <- future_map(mnar_dat, \(x) mice(x[, ..these_vars_prs], m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mcar_imp_prs <- future_map(mcar_dat, \(x) mice(x |> select(all_of(these_vars)), m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mar_imp_prs <- future_map(mar_dat, \(x) mice(x |> select(all_of(these_vars)), m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
+    mnar_imp_prs <- future_map(mnar_dat, \(x) mice(x |> select(all_of(these_vars)), m = ms), .progress = TRUE, .options = furrr_options(seed = TRUE))
 
     # List of data sets
     data_sets <- list(
