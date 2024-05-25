@@ -3,11 +3,12 @@ ms::libri(
   survey, mice, patchwork, furrr, parallelly
 )
 
+
 if (availableCores() <= 8) {
-  plan(multisession, workers = 6)
+    plan(multisession, workers = 6)
 } else {
-  wkrs <- min(c(availableCores() / 2, 24))
-  plan(multicore, workers = wkrs)
+    wkrs <- min(c(availableCores() / 2, 18))
+    plan(multicore, workers = wkrs)
 }
 
 source("fn/mat_and_means.R")
@@ -46,19 +47,19 @@ for (sample_size in sample_sizes) {
 
       # samples
       mcar_data <- data[select == 1, ]
-      mcar_ex_ind <- rbinom(nrow(mcar_data), 1, 0.25)
-      mcar_out_ind <- rbinom(nrow(mcar_data), 1, 0.25)
-      mcar_data[mcar_ex_ind == 1, exposure] <- NA
-      mcar_data[mcar_out_ind == 1, outcome] <- NA
+      mcar_ex_ind <- rbinom(sample_size, c(0,1), 0.25)
+      mcar_out_ind <- rbinom(sample_size, c(0,1), 0.25)
+      mcar_data[mcar_ex_ind == 1, bmi := NA]
+      mcar_data[mcar_out_ind == 1, glucose := NA]
       mcar_data$wgt <- mcar_data$wgt * (nrow(mcar_data) / sum(mcar_data$wgt))
 
       mar_data <- make_ex_out_mar3(
-        data = data[select == 1, ],
-        exposure = exposure,
-        outcome = outcome,
-        covs = covs,
-        ex_int = -3.73,
-        out_int = -3.13
+                  data       = data[select == 1, ],
+                  exposure = exposure,
+                  outcome = outcome,
+                  covs = covs,
+                  ex_int = -4.07,
+                  out_int = -4.07
       )
       mar_data$wgt <- mar_data$wgt * (nrow(mar_data) / sum(mar_data$wgt))
 
@@ -67,8 +68,8 @@ for (sample_size in sample_sizes) {
           exposure = exposure,
           outcome = outcome,
           covs = covs,
-          ex_int = -4.52,
-          out_int = -3.2
+          ex_int = -5.7,
+          out_int = -5.7
       )
       mnar_data$wgt <- mnar_data$wgt * (nrow(mnar_data) / sum(mnar_data$wgt))
 
@@ -159,7 +160,7 @@ for (sample_size in sample_sizes) {
   # res <- rbindlist(res, use.names = TRUE, fill = TRUE)
   fwrite(
     x    = res,
-    file = paste0("data/public/", outcome, "_", exposure, "_n", sample_size, "_i", iterations, "_exoutmiss_biased_simul_res.csv")
+    file = paste0("data/public/", outcome, "_", exposure, "_n", sample_size, "_i", iterations, "_biased_simul_res.csv")
   )
 
   # cli_progress_step("calculating diagnostics...")
@@ -260,6 +261,6 @@ for (sample_size in sample_sizes) {
 
   fwrite(
     x = diag,
-    file = paste0("data/public/", outcome, "_", exposure, "_n", sample_size, "_i", iterations, "_exoutmiss_biased_simul_diag.csv")
+    file = paste0("data/public/", outcome, "_", exposure, "_n", sample_size, "_i", iterations, "_biased_simul_diag.csv")
   )
 }

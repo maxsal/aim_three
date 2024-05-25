@@ -295,3 +295,84 @@ make_ex_out_mnar5 <- function(
             rmse      = rmse
         )
     }
+
+
+select_threshold <- function(data, stable, variable, step = 0.05) {
+    tmp_seq <- seq(min(as.numeric(data[[variable]])) + step, max(as.numeric(data[[variable]])) - step, step)
+    cors <- map_dbl(
+        tmp_seq,
+        \(i) {
+            cor(data[[stable]], as.numeric(data[[variable]] >= i))
+        }
+    )
+    cor_diff <- cors - cor(data[[stable]], data[[variable]])
+    tmp_seq[which.min(abs(cor_diff))]
+}
+
+generate_data <- function(
+    n = 100000,
+    mu = c(0, 0.5359, 0, 0, 0.4811, 0.8864, 0, 0),
+    bin_vars = c("female", "smoke", "nhw"),
+    mat = NULL) {
+    data <- MASS::mvrnorm(
+        n = n,
+        mu = c(0, 0.5359, 0, 0, 0.4811, 0.8864, 0, 0),
+        Sigma = mat
+    ) |> data.table::as.data.table()
+    data[, id := 1:.N]
+    if (!is.null(bin_vars)) {
+        for (bin_var in bin_vars) {
+            data[[bin_var]] <- as.numeric(data[[bin_var]] >= select_threshold(data, "age", bin_var))
+        }
+    }
+    data
+}
+
+map_generate_data <- function(
+    iterations = 1000,
+    size = 100000,
+    mu = c(0, 0.5359, 0, 0, 0.4811, 0.8864, 0, 0),
+    mat = NULL) {
+    furrr::future_map(
+        seq_len(iterations),
+        \(x) {
+            set.seed(x)
+            generate_data(n = size, mu = mu, mat = mat)
+        },
+        .progress = TRUE,
+        .options = furrr_options(seed = TRUE)
+    )
+}
+
+# Define helper functions to avoid redundant code
+initialize_predictor_matrix <- function(data, these_vars) {
+    pred_mat <- suppressWarnings(mice(data, m = 1, printFlag = FALSE)$predictorMatrix)
+    not_these_vars <- setdiff(names(data), these_vars)
+    pred_mat[not_these_vars, ] <- 0
+    pred_mat[, not_these_vars] <- 0
+    return(pred_mat)
+}
+
+sample_and_weight <- function(data, sample_size, samp_score) {
+    dat <- data.table::as.data.table(data.table::copy(data))
+    samp_prob <- plogis(samp_score)
+    dat[, ww := samp_prob]
+    dat[, wgt := 1 / ww * .N / sum(1 / ww)]
+    samp_idx <- sample(seq_len(data[, .N]), sample_size, prob = dat[, ww])
+    dat[, select := 0]
+    dat[samp_idx, select := 1]
+    return(dat[select == 1, ])
+}
+
+perform_analysis <- function(data, formula_list, method_info, var = exposure) {
+    results <- vector("list", length(formula_list))
+    for (i in seq_along(formula_list)) {
+        formula <- formula_list[[i]]
+        method <- method_info[[i]]
+        # Depending on the actual functions being called, the parameters and logic might need to be adjusted
+        model_results <- some_model_function(as.formula(formula), data, var)
+        model_results <- add_method_info(model_results, method)
+        results[[i]] <- model_results
+    }
+    do.call(rbind, results)
+}
