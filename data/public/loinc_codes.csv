@@ -41,6 +41,7 @@ Vitamin D,Vitamin levels,62290-2,"1,25-Dihydroxyvitamin D, Serum",1,0
 Vitamin B12,Vitamin levels,96805-7,"Vitamin B12 and Folate, Serum",0,0
 Vitamin B12,Vitamin levels,2132-9,"Vitamin B12 Assay, Serum",0,1
 Vitamin B12,Vitamin levels,16695-9,Cobalamin (Vitamin B12) [Mass/volume] in Blood,1,0
+Fasting glucose plasma,Blood sugar levels,1558-6,Fasting glucose [Mass/volume] in Serum or Plasma,1,1
 Fasting glucose plasma,Blood sugar levels,1558-9,Fasting glucose [Mass/volume] in Serum of Plasma,1,0
 Fasting glucose plasma,Blood sugar levels,76629-5,Fasting glucose [Moles/volume] in Blood,0,0
 Glucose,Blood sugar levels,2345-7,Glucose [Mass/volume] in Serum or Plasma,1,1
